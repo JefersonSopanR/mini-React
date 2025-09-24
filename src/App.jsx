@@ -15,9 +15,10 @@ const UseEffectDemo = () => {
 	};
 
 	// 🟢 Pattern 1: Run after EVERY render (no dependency array)
+	/*
 	useEffect(() => {
 		addLog('🔄 Effect 1: Runs after EVERY render');
-	});
+	});*/
 
 	// 🟡 Pattern 2: Run ONCE on mount (empty dependency array)
 	useEffect(() => {
@@ -85,46 +86,112 @@ const UseEffectDemo = () => {
 
 // 🎯 VISUAL EXAMPLE 2: Timer with Cleanup
 const TimerDemo = () => {
+	const [inputSeconds, setInputSeconds] = useState('')
 	const [seconds, setSeconds] = useState(0);
-	const [isRunning, setIsRunning] = useState(false);
+	const [flagTime, setFlagTime] = useState(false);
+	const [flagLogs, setFlagLogs] = useState('');
+	const [logs, setLogs] = useState([]);
+	const [startTime, setStartTime] = useState('');
+	const [finishTime, setFinishTime] = useState(0);
+	const [logsCounts, setLogsCount] = useState(0)
+	const [showLogs, setShowLogs] = useState(true)
 
 	useEffect(() => {
 		let interval = null;
-		
-		if (isRunning) {
-			interval = setInterval(() => {
-				setSeconds(prev => prev + 1);
-			}, 1000);
-		}
 
-		// 🧹 Cleanup function - VERY IMPORTANT!
+		if (!(seconds > 0))
+			setFlagTime(false);
+		if (flagTime) {
+			setFlagLogs('on');
+			interval = setInterval(() => {
+				setSeconds(seconds => seconds - 1);
+			},1000)
+		}
 		return () => {
 			if (interval) {
 				clearInterval(interval);
-				console.log('⏰ Timer cleaned up');
 			}
-		};
-	}, [isRunning]); // Runs when isRunning changes
+		}
+	}, [flagTime])
 
-	const resetTimer = () => {
+	useEffect(() => {
+		if (!(seconds  > 0))
+		{
+			if (flagLogs === 'on') {
+				setFlagLogs('off');
+			}
+			setFlagTime(false)
+		}
+
+	}, [seconds])
+
+	useEffect(() => {
+		if (flagLogs === 'off') {
+			setLogsCount((logsCounts) => logsCounts + 1)
+			setLogs((logs) => [...logs, {index: Date.now() , message: `(${logsCounts}) start time: ${startTime} finish time: ${finishTime} - it took you ${startTime - finishTime}`}])
+			setStartTime('')
+			setFinishTime(0)
+		}
+	}, [flagLogs])
+
+	const resetClock = () => {
+		setFinishTime(seconds)
 		setSeconds(0);
-		setIsRunning(false);
-	};
+		setFlagTime(false)
+	}
 
+	const getTime = (e) => {
+		const time = e.target.value;
+
+		// Allow empty input OR numbers that don't start with 0
+		if (time === '' || /^[1-9]\d*$/.test(time)) {
+			setStartTime(time)
+			setInputSeconds(time)
+		}
+	}
+
+	const deleteLog = (i) => {
+		setLogs(logs.filter(log => log.index !== i))
+	}
+	
 	return (
 		<div style={{ border: '2px solid green', padding: '20px', margin: '10px' }}>
 			<h2>⏰ Timer Demo (with Cleanup)</h2>
-			
+			<input value={inputSeconds} onChange={getTime}  placeholder='enter time'></input>
+			<button onClick={() => {setSeconds(Number(inputSeconds) || 0); setInputSeconds('')}}>Add time</button>
 			<div style={{ fontSize: '24px', margin: '20px 0' }}>
 				⏱️ {seconds} seconds
 			</div>
 			
-			<button onClick={() => setIsRunning(!isRunning)}>
-				{isRunning ? '⏸️ Pause' : '▶️ Start'}
+			<button onClick={() => setFlagTime(!flagTime)}>
+				{flagTime ? '⏸️ Pause' : '▶️ Start'}
 			</button>
-			<button onClick={resetTimer} style={{ marginLeft: '10px' }}>
+			<button onClick={resetClock} style={{ marginLeft: '10px' }}>
 				🔄 Reset
 			</button>
+			<br/><br/>
+			<button onClick={() => setShowLogs(!showLogs)}>
+				{showLogs ? 'Hide Logs' : 'Show Logs'}
+			</button>
+			{showLogs && <div>
+				{
+					logs.map((log) => (
+						<div key={log.index} style={{ 
+							display: 'flex', 
+							justifyContent: 'space-between', 
+							alignItems: 'center',
+							marginBottom: '5px',
+							padding: '5px',
+							border: '1px solid #ccc'
+						}}>
+							<span>{log.message}</span>
+							<button onClick={() => deleteLog(log.index)}>🗑️</button>
+						</div>
+					))
+				}
+				{logs.length === 0 && <div>No logs yet...</div>}
+			</div>
+			}
 			
 			<div style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
 				Open browser console to see cleanup messages!
@@ -132,6 +199,7 @@ const TimerDemo = () => {
 		</div>
 	);
 };
+
 
 // 🎯 VISUAL EXAMPLE 3: Local Storage Persistence
 const LocalStorageDemo = () => {
