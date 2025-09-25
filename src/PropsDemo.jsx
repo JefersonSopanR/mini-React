@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import BasicPropsExample from './examples/BasicProps';
-import PropDrillingExample from './examples/PropDrilling';
-import ContextExample from './examples/ContextSolution';
-import CompositionExample from './examples/CompositionSolution';
+import BasicPropsExample from './examplesContext/BasicProps';
+import PropDrillingExample from './examplesContext/PropDrilling';
+import ContextExample from './examplesContext/ContextSolution';
+import CompositionExample from './examplesContext/CompositionSolution';
 
 const PropsDemo = () => {
   const [activeExample, setActiveExample] = useState('basic');

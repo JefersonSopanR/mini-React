@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import PropsDemo from './PropsDemo'
+import RefDemo from './RefDemo'
 
 
 const Email = () => {
@@ -124,6 +125,20 @@ function App() {
         >
           Props & Prop Drilling Demo
         </button>
+		<button 
+          onClick={() => setActiveDemo('useRef')}
+          style={{
+            margin: '5px',
+            padding: '10px 15px',
+            backgroundColor: activeDemo === 'useRef' ? '#007bff' : '#f8f9fa',
+            color: activeDemo === 'useRef' ? 'white' : 'black',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          useRef Demo
+        </button>
       </div>
 
       {activeDemo === 'email' ? (
@@ -142,9 +157,8 @@ function App() {
             🧪 Experiment with the email form above!
           </p>
         </>
-      ) : (
-        <PropsDemo />
-      )}
+      ) : (activeDemo === 'props' ? (
+        <PropsDemo />) : (<RefDemo />))}
     </>
   )
 }
