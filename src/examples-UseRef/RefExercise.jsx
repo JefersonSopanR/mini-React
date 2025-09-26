@@ -1,25 +1,26 @@
-import React, { useRef, useState } from 'react';
+import { useState, useRef } from "react";
 
 function RefExercise() {
-  const inputRef = useRef(null);
-  const valueRef = useRef('');
-  const [show, setShow] = useState('');
+	const [letter, setLetter] = useState('')
+	
+	const ref = useRef('');
+	const [upp, setUpp] = useState('2')
 
-  const handleChange = (e) => {
-    valueRef.current = e.target.value; // Store value in ref
-  };
+	const getValue = (e) => {
+		const value = e.target.value;
+		setLetter(value)
+	}
+	ref.current = letter.toUpperCase();
 
-  const handleShow = () => {
-    setShow(valueRef.current); // Show value from ref
-  };
+	return (
+		<>
+			<input value={letter} placeholder="Enter value" onChange={(e) => getValue(e)}></input>
+			<button onClick={() => {setUpp(ref.current); setLetter('')}}>To uppercase</button>
+			<p>Value: {upp}</p>
+		</>
+	)
 
-  return (
-    <div>
-      <input ref={inputRef} onChange={handleChange} />
-      <button onClick={handleShow}>Show Value</button>
-      <p>Value: {show}</p>
-    </div>
-  );
 }
 
 export default RefExercise
+

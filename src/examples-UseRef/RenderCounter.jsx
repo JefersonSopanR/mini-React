@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 
 function RenderCounter() {
-  const renderCount = useRef(1);
+  const renderCount = useRef(0);
   const [value, setValue] = useState('');
 
   // This runs on every render

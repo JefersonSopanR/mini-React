@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect, useReducer, useRef, use } from 'react'
 import './App.css'
 import PropsDemo from './PropsDemo'
 import RefDemo from './RefDemo'
@@ -88,78 +86,208 @@ const Email = () => {
   );
 }
 
+/*
+function todoReducer(state, action) {
+  switch (action.type) {
+    case 'add':
+      return [...state, { text: action.text, done: false }];
+    case 'toggle':
+      return state.map((todo, idx) =>
+        idx === action.index ? { ...todo, done: !todo.done } : todo
+      );
+    case 'remove':
+      return state.filter((_, idx) => idx !== action.index);
+    default:
+      return state;
+  }
+}
 
+function TodoList() {
+  const [todos, dispatch] = useReducer(todoReducer, []);
+  const [input, setInput] = useState('');
+
+  return (
+    <div>
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        placeholder="Add todo"
+      />
+      <button onClick={() => {
+        dispatch({ type: 'add', text: input });
+        setInput('');
+      }}>Add</button>
+      <ul>
+        {todos.map((todo, idx) => (
+          <li key={idx} style={{ textDecoration: todo.done ? 'line-through' : 'none' }}>
+            {todo.text}
+            <button onClick={() => dispatch({ type: 'toggle', index: idx })}>Toggle</button>
+            <button onClick={() => dispatch({ type: 'remove', index: idx })}>Remove</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+*/
+
+/*
+function formReducer(state, action) {
+  switch (action.type) {
+    case 'change':
+      return { ...state, [action.field]: action.value };
+    case 'reset':
+      return { name: '', email: '' };
+    default:
+      return state;
+  }
+}
+
+function Form() {
+  const [state, dispatch] = useReducer(formReducer, { name: '', email: '' });
+
+  return (
+    <form>
+      <input
+        value={state.name}
+        onChange={e => dispatch({ type: 'change', field: 'name', value: e.target.value })}
+        placeholder="Name"
+      />
+      <input
+        value={state.email}
+        onChange={e => dispatch({ type: 'change', field: 'email', value: e.target.value })}
+        placeholder="Email"
+      />
+      <button type="button" onClick={() => dispatch({ type: 'reset' })}>Reset</button>
+      <p>Name: {state.name}, Email: {state.email}</p>
+    </form>
+  );
+}
+*/
+
+/*
+function counterReducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return { count: state.count + 1 };
+    case 'decrement':
+      return { count: state.count - 1 };
+    default:
+      return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(counterReducer, { count: 0 });
+
+  return (
+    <div>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+    </div>
+  );
+}*/
+
+/*
+
+
+
+
+
+
+
+
+function withWindowWidth(WrappedComponent) {
+  return function EnhancedComponent(props) {
+    const [width, setWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+      function handleResize() {
+        setWidth(window.innerWidth);
+      }
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    return <WrappedComponent {...props} windowWidth={width} />;
+  };
+}
+
+// Usage:
+function ShowWidth({ windowWidth }) {
+  return <p>Window width: {windowWidth}</p>;
+}
+
+const ShowWidthWithWindow = withWindowWidth(ShowWidth);
+
+function App() {
+  return <ShowWidthWithWindow />;
+}
+
+*/
+
+
+
+const WindowChecker = ({props, setProps}) => {
+	useEffect(() => {
+
+		function handleMicky(e) {
+			setProps({x: e.clientX, y: e.clientY})
+		}		
+		window.addEventListener('mousemove', handleMicky)
+		return () => {window.removeEventListener('mousemove', handleMicky)}
+	}, [])
+
+	return (
+		<>
+			<p>x: {props.x} y: {props.y}</p>
+		</>
+	)
+}
+
+const Manny = ({propsManny, setPropsManny}) => {
+
+	const refBox = useRef(null);
+
+	useEffect(() => {
+		function mannyMoves(e) {
+			setPropsManny({x: e.offsetX, y: e.offsetY})
+		}
+
+		refBox.current.addEventListener('mousemove', mannyMoves)
+	}, [])
+
+	return (
+		<>
+			<div ref={refBox}  style={{height: 200, width: 200, background: 'red'}}></div>
+			<p> Manny Pos: x: {propsManny.x} y: {propsManny.y}</p>
+		</>
+	)
+}
 
 function App() {
   const [count, setCount] = useState(0)
   const [activeDemo, setActiveDemo] = useState('email');
+  const [show, setShow] = useState(true);
+  const [props, setProps] = useState({x: 0, y: 0});
+  const [propsManny, setPropsManny] = useState({x: 0, y: 0})
 
   return (
-    <>
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <button 
-          onClick={() => setActiveDemo('email')}
-          style={{
-            margin: '5px',
-            padding: '10px 15px',
-            backgroundColor: activeDemo === 'email' ? '#007bff' : '#f8f9fa',
-            color: activeDemo === 'email' ? 'white' : 'black',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Email App
-        </button>
-        <button 
-          onClick={() => setActiveDemo('props')}
-          style={{
-            margin: '5px',
-            padding: '10px 15px',
-            backgroundColor: activeDemo === 'props' ? '#007bff' : '#f8f9fa',
-            color: activeDemo === 'props' ? 'white' : 'black',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Props & Prop Drilling Demo
-        </button>
-		<button 
-          onClick={() => setActiveDemo('useRef')}
-          style={{
-            margin: '5px',
-            padding: '10px 15px',
-            backgroundColor: activeDemo === 'useRef' ? '#007bff' : '#f8f9fa',
-            color: activeDemo === 'useRef' ? 'white' : 'black',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          useRef Demo
-        </button>
-      </div>
+	<>
+	<p>x: {props.x} y: {props.y}</p>
+	<p>Ousite the box x: {propsManny.x} y: {propsManny.y}</p>
+	<button onClick={() => setShow(!show)}>{show ? "HIDE" : "SHOW"}</button>
+	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+	{
+		show && 
+		<>
+			<WindowChecker props={props} setProps={setProps}/>
+			<Manny propsManny={propsManny} setPropsManny={setPropsManny}/>
 
-      {activeDemo === 'email' ? (
-        <>
-          <div className="card">
-            <button onClick={() => setCount((count) => count + 1)}>
-              count is {count}
-            </button>
-          </div>
-          
-          <div>
-            <Email />
-          </div>
-          
-          <p className="read-the-docs">
-            🧪 Experiment with the email form above!
-          </p>
-        </>
-      ) : (activeDemo === 'props' ? (
-        <PropsDemo />) : (<RefDemo />))}
-    </>
+		</>
+		}
+	</>
   )
 }
 
